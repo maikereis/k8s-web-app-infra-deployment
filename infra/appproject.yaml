@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: webapp-kubernetes
+  namespace: argocd
+spec:
+  description: Project for webapp application
+  
+  # Quais repositórios este project pode acessar
+  sourceRepos:
+    - 'https://github.com/maikereis/web-app-kubernetes.git'
+  
+  # Onde este project pode fazer deploy
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: app
+  
+  # Permissões sobre quais recursos pode criar
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

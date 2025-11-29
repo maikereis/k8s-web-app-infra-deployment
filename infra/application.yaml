@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webapp
+  namespace: argocd
+spec:
+  project: webapp-kubernetes
+
+  source:
+    repoURL: https://github.com/maikereis/web-app-kubernetes.git
+    targetRevision: main
+    path: app/base
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
