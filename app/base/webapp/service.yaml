@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: webapp-service
 spec:
-  type: NodePort
+  type: LoadBalancer 
   selector:
     app: webapp
   ports:
   - protocol: TCP
-    port: 3000
+    port: 80
     targetPort: 3000 # same as containerPort in ./deployment.yaml
-    nodePort: 30100
