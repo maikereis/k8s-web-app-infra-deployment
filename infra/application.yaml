@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/maikereis/web-app-kubernetes.git
-    targetRevision: main
+    targetRevision: master
     path: app/base
 
   destination:
