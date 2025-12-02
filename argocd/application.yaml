@@ -7,7 +7,7 @@ spec:
   project: webapp-kubernetes
 
   source:
-    repoURL: https://github.com/maikereis/web-app-kubernetes.git
+    repoURL: https://github.com/maikereis/web-app-infra.git
     targetRevision: master
     path: app/base
 

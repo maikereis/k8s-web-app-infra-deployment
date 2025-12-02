@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+  namespace: argocd
+data:
+  # Configuração de registries (onde buscar imagens)
+  registries.conf: |
+    registries:
+    - name: GitHub Container Registry
+      prefix: ghcr.io
+      api_url: https://ghcr.io
+      credentials: secret:argocd/ghcr-credentials
+      default: yes
+  
+  # Intervalo de checagem (a cada quanto tempo verifica novas imagens)
+  argocd.update_interval: "30s"
+  
+  # Log level
+  log.level: "info"

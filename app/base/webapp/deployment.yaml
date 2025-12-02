@@ -4,8 +4,14 @@ metadata:
   name: webapp-deployment
   labels:
     app: webapp
+  annotations:
+    # ArgoCD Image Updater
+    argocd-image-updater.argoproj.io/image-list: webapp=ghcr.io/maikereis/web-app
+    argocd-image-updater.argoproj.io/webapp.update-strategy: latest
+    argocd-image-updater.argoproj.io/webapp.allow-tags: regexp:^master-.*$
+    argocd-image-updater.argoproj.io/write-back-method: git
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: webapp
@@ -13,34 +19,46 @@ spec:
     metadata:
       labels:
         app: webapp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
       - name: webapp
-        image: nanajanashia/k8s-demo-app:v1.0
+        image: ghcr.io/maikereis/web-app:latest
         resources:
           requests:
-            cpu: "150m"
-            memory: "256Mi"
+            cpu: "100m"
+            memory: "128Mi"
           limits:
             cpu: "500m"
             memory: "512Mi"
         ports:
-        - containerPort: 3000
+        - containerPort: 8000
+          name: http
         env:
-        - name: USER_NAME
+        - name: MONGO_URL
+          value: "mongodb://mongo-service:27017"
+        - name: MONGO_USER
           valueFrom:
             secretKeyRef:
               name: mongo-secret
               key: mongo-user
-
-        - name: USER_PWD
+        - name: MONGO_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mongo-secret
               key: mongo-password
-
-        - name: DB_URL
-          valueFrom:
-            configMapKeyRef:
-              name: mongo-config
-              key: mongo-url
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5

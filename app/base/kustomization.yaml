@@ -8,3 +8,4 @@ resources:
   - mongo/service.yaml
   - webapp/deployment.yaml
   - webapp/service.yaml
+  - webapp/servicemonitor.yaml
