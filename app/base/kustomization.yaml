@@ -9,4 +9,3 @@ resources:
   - webapp/deployment.yaml
   - webapp/service.yaml
   - webapp/servicemonitor.yaml
-  - ghcr-pull-secret.yaml
