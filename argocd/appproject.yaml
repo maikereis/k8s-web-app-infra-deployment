@@ -8,7 +8,7 @@ spec:
   
   # Quais repositórios este project pode acessar
   sourceRepos:
-    - 'https://github.com/maikereis/web-app-kubernetes.git'
+    - 'https://github.com/maikereis/web-app-infra.git'
   
   # Onde este project pode fazer deploy
   destinations:
