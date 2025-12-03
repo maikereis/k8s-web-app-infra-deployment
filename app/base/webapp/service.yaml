@@ -10,6 +10,7 @@ spec:
     app: webapp
   ports:
   - protocol: TCP
+    name: http
     port: 8000
     targetPort: 8000
     nodePort: 30200
