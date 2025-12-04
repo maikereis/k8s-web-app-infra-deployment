@@ -116,7 +116,7 @@ kubectl get pods -n argocd -w
 ### 3. Instalar ArgoCD Image Updater
 
 ```bash
-kubectl apply -n argocd-image-updater-system -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/config/install.yaml # will create argocd-image-updater-system namespace
+kubectl apply -n argocd-image-updater-system -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/config/install.yaml
 ```
 
 ---
