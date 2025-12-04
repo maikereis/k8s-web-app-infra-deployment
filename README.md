@@ -357,8 +357,8 @@ kubectl delete secret ghcr-pull-secret -n app
 kubectl create secret docker-registry ghcr-pull-secret \
   --namespace app \
   --docker-server=ghcr.io \
-  --docker-username=maikereis \
-  --docker-password=${GITHUB_REPO_PAT}
+  --docker-username=${GITHUB_USER} \
+  --docker-password=${GITHUB_DOCKER_PAT}
 
 # Reiniciar deployment
 kubectl rollout restart deployment webapp-deployment -n app
@@ -425,8 +425,6 @@ kubectl logs -n app -l app=mongo -f
 kubectl delete namespace app
 kubectl delete namespace argocd
 kubectl delete namespace monitoring
-
-# Depois siga o guia desde o início
 ```
 
 ### Parar Minikube
@@ -475,15 +473,20 @@ web-app-infra/
 ## Destruindo tudo
 
 ### Deletar namespaces (isso deleta tudo dentro deles)
+```bash
 kubectl delete namespace app
 kubectl delete namespace argocd
 kubectl delete namespace monitoring
+```
 
 ### Parar o minikube
+```bash
 minikube stop
-
+```
 ### Deletar o cluster completamente (começa do zero)
+```bash
 minikube delete
+```
 
 ## Recursos Úteis
 
