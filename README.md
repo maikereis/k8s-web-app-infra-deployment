@@ -83,28 +83,15 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
 kubectl get pods -n monitoring -w
 ```
 
-### 4. Accessar o grafana
-
-Access grafana
-```bash
-export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=prometheus" -oname)
-
-kubectl --namespace monitoring port-forward $POD_NAME 3000
-```
-
-#### 5. Credenciais de login
-
-Default user: admin
-
-Get password
-```
-kubectl --namespace monitoring get secrets prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
-```
-
-
 ---
 
 ## Instalação do ArgoCD
+
+```bash
+export GITHUB_USER=<user>
+export GITHUB_REPO_PAT=<pat>
+export GITHUB_DOCKER_PAT=<pat>
+```
 
 ### 1. Criar Namespace e Instalar
 
@@ -123,7 +110,7 @@ kubectl get pods -n argocd -w
 ### 3. Instalar ArgoCD Image Updater
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/config/install.yaml # will create argocd-image-updater-system namespace
+kubectl apply -n argocd-image-updater-system -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/config/install.yaml # will create argocd-image-updater-system namespace
 ```
 
 ---
@@ -133,27 +120,33 @@ kubectl apply -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-up
 
 ### 1. Criar Secret para GHCR (GitHub Container Registry)
 
-**IMPORTANTE:** Substitua `${GITHUB_PAT}` pelo seu token real.
-
 ```bash
 kubectl create namespace app
+
+#kubectl delete secret ghcr-pull-secret -n app
 
 kubectl create secret docker-registry ghcr-pull-secret \
   --namespace app \
   --docker-server=ghcr.io \
   --docker-username=${GITHUB_USER} \
-  --docker-password=${GITHUB_PAT}
+  --docker-password=${GITHUB_DOCKER_PAT}
 
-# Secret para o ArgoCD Image Updater
+#kubectl delete secret ghcr-credentials -n argocd
+
+# Secret para o ArgoCD Image Update
 kubectl create secret generic ghcr-credentials \
   --namespace argocd \
-  --from-literal=credentials="${GITHUB_USER}:${GITHUB_PAT}"
+  --from-literal=credentials="${GITHUB_USER}:${GITHUB_REPO_PAT}"
+
+#kubectl delete secret web-app-infra-repo -n argocd
 
 # Secret para o ArgoCD acessar repositório Git
 kubectl create secret generic web-app-infra-repo \
   --namespace argocd \
   --from-literal=type=git \
-  --from-literal=url=https://${GITHUB_USER}:${GITHUB_PAT}@github.com/${GITHUB_USER}/web-app-infra.git
+  --from-literal=url=https://github.com/${GITHUB_USER}/web-app-infra.git \
+  --from-literal=username=${GITHUB_USER} \
+  --from-literal=password=${GITHUB_REPO_PAT}
 
 
 kubectl label secret web-app-infra-repo -n argocd argocd.argoproj.io/secret-type=repository
@@ -232,20 +225,24 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 ### 3. Grafana
 
-Em outro terminal:
-
 ```bash
-kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
+export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=prometheus" -oname)
+
+kubectl --namespace monitoring port-forward $POD_NAME 3000
 ```
+
+#### 5. Credenciais de login
+
 
 Acesse: `http://localhost:3000`
 
 **Credenciais:**
 - Username: `admin`
 
-
-kubectl get secret --namespace monitoring -l app.kubernetes.io/component=admin-secret -o jsonpath="{.items[0].data.admin-password}" | base64 --decode ; echo
-
+Get password
+```
+kubectl --namespace monitoring get secrets prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
 
 ### 4. Prometheus (opcional)
 
@@ -355,7 +352,7 @@ kubectl create secret docker-registry ghcr-pull-secret \
   --namespace app \
   --docker-server=ghcr.io \
   --docker-username=maikereis \
-  --docker-password=${GITHUB_PAT}
+  --docker-password=${GITHUB_REPO_PAT}
 
 # Reiniciar deployment
 kubectl rollout restart deployment webapp-deployment -n app
