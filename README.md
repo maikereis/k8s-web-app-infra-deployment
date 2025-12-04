@@ -15,16 +15,22 @@ Stack completa de observabilidade com Python FastAPI, MongoDB, Kubernetes, ArgoC
                          ▼
 ┌─────────────────────────────────────────────────────────┐
 │ Minikube Cluster                                        │
-│                                                         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
 │  │ Namespace:   │  │ Namespace:   │  │ Namespace:   │   │
 │  │ argocd       │  │ app          │  │ monitoring   │   │
 │  │              │  │              │  │              │   │
 │  │ • ArgoCD     │  │ • Python API │  │ • Prometheus │   │
-│  │ • Image      │  │ • MongoDB    │  │ • Grafana    │   │
-│  │   Updater    │  │              │  │ • Alertmgr   │   │
-│  └──────────────┘  └──────────────┘  └──────────────┘   │
+│  └──────────────┘  │ • MongoDB    │  │ • Grafana    │   │
+│                    │ • Alertmgr   │  │              │   │
+│                    └──────────────┘  └──────────────┘   │
+│  ┌────────────────────────────────┐                     │
+│  │  Namespace:                    │                     │
+│  │  argocd-image-updater-system   │                     │
+│  │                                │                     │
+│  │  • Image Updater               │                     │
+│  └────────────────────────────────┘                     │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ## Pré-requisitos
